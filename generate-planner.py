@@ -53,7 +53,7 @@ def add_holiday(date, day_x, day_y):
 # general constants
 YEAR = 2024
 include_mini_cal = True
-extra_rows_monday = 3  # extra rows for monday
+extra_rows_first_day_of_week = 3  # extra rows for first day of the week
 rows_per_day = 6
 font = 'helvetica'
 import_fed_holidays = True
@@ -134,8 +134,8 @@ while date_iter.has_next():
 	pdf.set_line_width(.3)
 	pdf.set_draw_color(0)
 	for y in range(5):
-		if y == 1:  # monday
-			line_y = vertical_padding + day_height * y - extra_rows_monday * row_spacing
+		if y == 1:  # first day of the week
+			line_y = vertical_padding + day_height * y - extra_rows_first_day_of_week * row_spacing
 			pdf.line(horizontal_padding, line_y, horizontal_padding + day_width, line_y)
 		elif not y == 0:  # skip first day on left side
 			line_y = vertical_padding + day_height * y
@@ -157,9 +157,9 @@ while date_iter.has_next():
 			day_x = horizontal_padding + day_width + day_horizontal_spacing
 			pdf.line(day_x + indent_padding, line_y, day_x + day_width, line_y)
 
-	# Add extra rows for monday
-	for extra_line in range(extra_rows_monday + 1):
-		line_y = vertical_padding + day_height + row_spacing * extra_line - extra_rows_monday * row_spacing
+	# Add extra rows for first day of the week
+	for extra_line in range(extra_rows_first_day_of_week + 1):
+		line_y = vertical_padding + day_height + row_spacing * extra_line - extra_rows_first_day_of_week * row_spacing
 		pdf.line(horizontal_padding + indent_padding, line_y, horizontal_padding + day_width, line_y)
 
 	# Have to do all of left side before right side
@@ -170,17 +170,17 @@ while date_iter.has_next():
 		# Add day of week label
 		pdf.set_font(style='', size=15)
 		pdf.set_xy(horizontal_padding,
-				   vertical_padding + day_height * i + 11 - extra_rows_monday * row_spacing * (i == 1))
+				   vertical_padding + day_height * i + 11 - extra_rows_first_day_of_week * row_spacing * (i == 1))
 		pdf.cell(w=indent_padding, align="C", text=date.strftime("%a"))
 
 		# Add day of month label
 		pdf.set_font(style='B', size=25)
 		pdf.set_xy(horizontal_padding,
-				   vertical_padding + day_height * i + 2 - extra_rows_monday * row_spacing * (i == 1))
+				   vertical_padding + day_height * i + 2 - extra_rows_first_day_of_week * row_spacing * (i == 1))
 		pdf.cell(w=indent_padding, align="C", text=str(date.day))
 
 		add_holiday(date, horizontal_padding + indent_padding + 1,
-					vertical_padding + day_height * i + 1 - extra_rows_monday * row_spacing * (i == 1))
+					vertical_padding + day_height * i + 1 - extra_rows_first_day_of_week * row_spacing * (i == 1))
 
 	# Add date labels on right
 	for i in range(4):
@@ -214,7 +214,7 @@ while date_iter.has_next():
 		index_start_calendar = max(dates.index(first_date_of_month) - first_date_of_month.day + 1, 0)
 		# Get calendar month. If before year starts then use January
 		cal_month = dates[index_start_calendar].month if dates[index_start_calendar].year == YEAR else 1
-		# get monday
+		# get the first day of the week
 		while dates[index_start_calendar].weekday() != first_day_of_week:
 			index_start_calendar -= 1
 
