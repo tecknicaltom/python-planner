@@ -57,6 +57,7 @@ extra_rows_monday = 3  # extra rows for monday
 rows_per_day = 6
 font = 'helvetica'
 import_fed_holidays = True
+first_day_of_week = calendar.SUNDAY
 
 # NOTE: does not support two holidays on one day
 holidays = {}
@@ -94,7 +95,7 @@ cx, cy = pdf.w - horizontal_padding - cw, pdf.h - vertical_padding - ch  # mini 
 # Get all dates in a year - there probably exists a more efficient way
 # dates_with_dup contains full weeks for each month (even when month doesn't start on monday and end on sunday)
 # so there are duplicated dates
-dates_with_dup = [i for m in range(1, 13) for i in calendar.Calendar(firstweekday=0).itermonthdates(YEAR, m)]
+dates_with_dup = [i for m in range(1, 13) for i in calendar.Calendar(firstweekday=first_day_of_week).itermonthdates(YEAR, m)]
 dates = []
 for date in dates_with_dup:
 	if date not in dates:
