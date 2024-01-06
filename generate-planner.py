@@ -34,19 +34,19 @@ def add_holiday(date, day_x, day_y):
 	"""
 
 	if date.day == 1:
-		pdf.set_font('', style='', size=14)
+		pdf.set_font(style='', size=14)
 		pdf.set_text_color(200)
 		pdf.set_xy(day_x, day_y)
-		pdf.cell(0, txt=date.strftime("%B %Y"))
+		pdf.cell(txt=date.strftime("%B %Y"))
 		pdf.set_text_color(0)
 
 	if date in holidays:
-		pdf.set_font('', style='', size=14)
+		pdf.set_font(style='', size=14)
 		pdf.set_text_color(200)
 		pdf.set_xy(day_x, day_y)
 		if date.day == 1:
 			pdf.set_xy(day_x, day_y + row_spacing)
-		pdf.cell(0, txt=holidays[date])
+		pdf.cell(txt=holidays[date])
 		pdf.set_text_color(0)
 
 
@@ -78,7 +78,7 @@ vertical_padding = day_horizontal_spacing
 horizontal_padding = vertical_padding
 
 pdf = FPDF(orientation="l")
-pdf.set_margins(0, 0)
+pdf.set_margin(0)
 pdf.set_font(family=font)
 
 # Compute more constants
@@ -103,13 +103,13 @@ date_iter = Iterator(dates)
 
 # Add title page
 pdf.add_page()
-pdf.set_font('', style='B', size=30)
+pdf.set_font(style='B', size=30)
 pdf.set_y(pdf.h / 2)
-pdf.cell(0, txt=str(YEAR) + " PLANNER", align='C', ln=2)
-pdf.set_font('', style='', size=15)
-pdf.cell(0, txt="https://github.com/jpperret/python-planner",
+pdf.cell(txt=str(YEAR) + " PLANNER", center=True, ln=2)
+pdf.set_font(style='', size=15)
+pdf.cell(txt="https://github.com/jpperret/python-planner",
 		 link="https://github.com/jpperret/python-planner",
-		 align='C')
+		 center=True)
 
 while date_iter.has_next():
 	pdf.add_page()
@@ -124,7 +124,7 @@ while date_iter.has_next():
 	pdf.cell(day_width, day_height * 2, txt="", fill=True)
 
 	# add week title
-	pdf.set_font('', style='B', size=20)
+	pdf.set_font(style='B', size=20)
 	pdf.set_xy(0, vertical_padding * 1.5)
 	pdf.cell(w=horizontal_padding + day_horizontal_spacing + day_width, align="C",
 			 txt=first_date_of_week.strftime("Week Beginning %B %d, %Y"))
@@ -167,13 +167,13 @@ while date_iter.has_next():
 		links[date] = page_link
 
 		# Add day of week label
-		pdf.set_font('', style='', size=15)
+		pdf.set_font(style='', size=15)
 		pdf.set_xy(horizontal_padding,
 				   vertical_padding + day_height * i + 11 - extra_rows_monday * row_spacing * (i == 1))
 		pdf.cell(w=indent_padding, align="C", txt=date.strftime("%a"))
 
 		# Add day of month label
-		pdf.set_font('', style='B', size=25)
+		pdf.set_font(style='B', size=25)
 		pdf.set_xy(horizontal_padding,
 				   vertical_padding + day_height * i + 2 - extra_rows_monday * row_spacing * (i == 1))
 		pdf.cell(w=indent_padding, align="C", txt=str(date.day))
@@ -187,12 +187,12 @@ while date_iter.has_next():
 		links[date] = page_link
 
 		# Add day of week label
-		pdf.set_font('', style='', size=15)
+		pdf.set_font(style='', size=15)
 		pdf.set_xy(horizontal_padding + day_width + day_horizontal_spacing, vertical_padding + day_height * i + 11)
 		pdf.cell(w=indent_padding, align="C", txt=date.strftime("%a"))
 
 		# Add day of month label
-		pdf.set_font('', style='B', size=25)
+		pdf.set_font(style='B', size=25)
 		pdf.set_xy(horizontal_padding + day_width + day_horizontal_spacing, vertical_padding + day_height * i + 2)
 		pdf.cell(w=indent_padding, align="C", txt=str(date.day))
 
@@ -225,14 +225,14 @@ while date_iter.has_next():
 		crh = ch / (weeks_in_month + 2)
 
 		# Add month header
-		pdf.set_font('', style='', size=10)
+		pdf.set_font(style='', size=10)
 		pdf.set_xy(cx, cy)
 		pdf.cell(w=cw, txt=new_date(YEAR, cal_month, 1).strftime("%B"), align="C")
 
 		# Add weekday headers
 		for c in range(7):
 			pdf.set_xy(cx + ccw * c, cy + crh)
-			pdf.cell(0, txt=["M", "T", "W", "T", "F", "S", "S"][c])
+			pdf.cell(txt=["M", "T", "W", "T", "F", "S", "S"][c])
 
 		# Add dates and links to page
 		for r in range(weeks_in_month):
@@ -249,7 +249,7 @@ while date_iter.has_next():
 					pdf.set_text_color(200)
 
 				pdf.set_xy(cx + ccw * c, cy + crh * (r + 2))  # + 2 to skip month and weekday headers
-				pdf.cell(0, txt=str(dates[index_start_calendar].day), link=link, align='C')
+				pdf.cell(txt=str(dates[index_start_calendar].day), link=link, align='C')
 				pdf.set_text_color(0)
 
 				# Add a border around current week
