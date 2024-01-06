@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import date as new_date
 import calendar
 
-from fpdf import FPDF  # https://pyfpdf.github.io/fpdf2/
+import fpdf
 
 
 class Iterator:
@@ -37,7 +37,7 @@ def add_holiday(date, day_x, day_y):
 		pdf.set_font(style='', size=14)
 		pdf.set_text_color(200)
 		pdf.set_xy(day_x, day_y)
-		pdf.cell(txt=date.strftime("%B %Y"))
+		pdf.cell(text=date.strftime("%B %Y"))
 		pdf.set_text_color(0)
 
 	if date in holidays:
@@ -46,7 +46,7 @@ def add_holiday(date, day_x, day_y):
 		pdf.set_xy(day_x, day_y)
 		if date.day == 1:
 			pdf.set_xy(day_x, day_y + row_spacing)
-		pdf.cell(txt=holidays[date])
+		pdf.cell(text=holidays[date])
 		pdf.set_text_color(0)
 
 
@@ -77,7 +77,7 @@ day_horizontal_spacing = 8  # horizontal space between days
 vertical_padding = day_horizontal_spacing
 horizontal_padding = vertical_padding
 
-pdf = FPDF(orientation="l")
+pdf = fpdf.FPDF(orientation="l")
 pdf.set_margin(0)
 pdf.set_font(family=font)
 
@@ -105,9 +105,9 @@ date_iter = Iterator(dates)
 pdf.add_page()
 pdf.set_font(style='B', size=30)
 pdf.set_y(pdf.h / 2)
-pdf.cell(txt=str(YEAR) + " PLANNER", center=True, ln=2)
+pdf.cell(text=str(YEAR) + " PLANNER", center=True, new_x=fpdf.XPos.LEFT, new_y=fpdf.YPos.NEXT)
 pdf.set_font(style='', size=15)
-pdf.cell(txt="https://github.com/jpperret/python-planner",
+pdf.cell(text="https://github.com/jpperret/python-planner",
 		 link="https://github.com/jpperret/python-planner",
 		 center=True)
 
@@ -121,13 +121,13 @@ while date_iter.has_next():
 	# Add shading behind Saturday and Sunday
 	pdf.set_fill_color(240)
 	pdf.set_xy(horizontal_padding + day_horizontal_spacing + day_width, vertical_padding + day_height * 2)
-	pdf.cell(day_width, day_height * 2, txt="", fill=True)
+	pdf.cell(day_width, day_height * 2, text="", fill=True)
 
 	# add week title
 	pdf.set_font(style='B', size=20)
 	pdf.set_xy(0, vertical_padding * 1.5)
 	pdf.cell(w=horizontal_padding + day_horizontal_spacing + day_width, align="C",
-			 txt=first_date_of_week.strftime("Week Beginning %B %d, %Y"))
+			 text=first_date_of_week.strftime("Week Beginning %B %d, %Y"))
 
 	# Add lines to separate days
 	pdf.set_line_width(.3)
@@ -170,13 +170,13 @@ while date_iter.has_next():
 		pdf.set_font(style='', size=15)
 		pdf.set_xy(horizontal_padding,
 				   vertical_padding + day_height * i + 11 - extra_rows_monday * row_spacing * (i == 1))
-		pdf.cell(w=indent_padding, align="C", txt=date.strftime("%a"))
+		pdf.cell(w=indent_padding, align="C", text=date.strftime("%a"))
 
 		# Add day of month label
 		pdf.set_font(style='B', size=25)
 		pdf.set_xy(horizontal_padding,
 				   vertical_padding + day_height * i + 2 - extra_rows_monday * row_spacing * (i == 1))
-		pdf.cell(w=indent_padding, align="C", txt=str(date.day))
+		pdf.cell(w=indent_padding, align="C", text=str(date.day))
 
 		add_holiday(date, horizontal_padding + indent_padding + 1,
 					vertical_padding + day_height * i + 1 - extra_rows_monday * row_spacing * (i == 1))
@@ -189,12 +189,12 @@ while date_iter.has_next():
 		# Add day of week label
 		pdf.set_font(style='', size=15)
 		pdf.set_xy(horizontal_padding + day_width + day_horizontal_spacing, vertical_padding + day_height * i + 11)
-		pdf.cell(w=indent_padding, align="C", txt=date.strftime("%a"))
+		pdf.cell(w=indent_padding, align="C", text=date.strftime("%a"))
 
 		# Add day of month label
 		pdf.set_font(style='B', size=25)
 		pdf.set_xy(horizontal_padding + day_width + day_horizontal_spacing, vertical_padding + day_height * i + 2)
-		pdf.cell(w=indent_padding, align="C", txt=str(date.day))
+		pdf.cell(w=indent_padding, align="C", text=str(date.day))
 
 		add_holiday(date, horizontal_padding + day_width + day_horizontal_spacing + indent_padding + 1,
 					vertical_padding + day_height * i + 1)
@@ -204,7 +204,7 @@ while date_iter.has_next():
 		pdf.set_xy(cx, cy)
 		pdf.set_fill_color(250)
 		# I would like a thicker border, but it's not supported
-		pdf.cell(cw, ch, txt="", fill=True, border=1)
+		pdf.cell(cw, ch, text="", fill=True, border=1)
 
 		# Get first date for mini calendar
 		# If month changes on thurs then use next month
@@ -227,12 +227,12 @@ while date_iter.has_next():
 		# Add month header
 		pdf.set_font(style='', size=10)
 		pdf.set_xy(cx, cy)
-		pdf.cell(w=cw, txt=new_date(YEAR, cal_month, 1).strftime("%B"), align="C")
+		pdf.cell(w=cw, text=new_date(YEAR, cal_month, 1).strftime("%B"), align="C")
 
 		# Add weekday headers
 		for c in range(7):
 			pdf.set_xy(cx + ccw * c, cy + crh)
-			pdf.cell(txt=["M", "T", "W", "T", "F", "S", "S"][c])
+			pdf.cell(text=["M", "T", "W", "T", "F", "S", "S"][c])
 
 		# Add dates and links to page
 		for r in range(weeks_in_month):
@@ -249,7 +249,7 @@ while date_iter.has_next():
 					pdf.set_text_color(200)
 
 				pdf.set_xy(cx + ccw * c, cy + crh * (r + 2))  # + 2 to skip month and weekday headers
-				pdf.cell(txt=str(dates[index_start_calendar].day), link=link, align='C')
+				pdf.cell(text=str(dates[index_start_calendar].day), link=link, align='C')
 				pdf.set_text_color(0)
 
 				# Add a border around current week
