@@ -215,7 +215,7 @@ while date_iter.has_next():
 		# Get calendar month. If before year starts then use January
 		cal_month = dates[index_start_calendar].month if dates[index_start_calendar].year == YEAR else 1
 		# get monday
-		while dates[index_start_calendar].weekday() != 0:
+		while dates[index_start_calendar].weekday() != first_day_of_week:
 			index_start_calendar -= 1
 
 		if (index_start_calendar + 6 * 7) < len(dates) and dates[index_start_calendar + 5 * 7].month == cal_month:
@@ -233,7 +233,7 @@ while date_iter.has_next():
 		# Add weekday headers
 		for c in range(7):
 			pdf.set_xy(cx + ccw * c, cy + crh)
-			pdf.cell(text=["M", "T", "W", "T", "F", "S", "S"][c])
+			pdf.cell(text=["M", "T", "W", "T", "F", "S", "S"][(c + first_day_of_week) % 7])
 
 		# Add dates and links to page
 		for r in range(weeks_in_month):
