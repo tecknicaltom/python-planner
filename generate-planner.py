@@ -58,6 +58,7 @@ rows_per_day = 6
 font = 'helvetica'
 import_fed_holidays = True
 first_day_of_week = calendar.SUNDAY
+highlight_weekend = True
 
 # NOTE: does not support two holidays on one day
 holidays = {}
@@ -119,11 +120,6 @@ while date_iter.has_next():
 
 	first_date_of_week = date_iter.peek()
 
-	# Add shading behind Saturday and Sunday
-	pdf.set_fill_color(240)
-	pdf.set_xy(horizontal_padding + day_horizontal_spacing + day_width, vertical_padding + day_height * 2)
-	pdf.cell(day_width, day_height * 2, text="", fill=True)
-
 	# add week title
 	pdf.set_font(style='B', size=20)
 	pdf.set_xy(0, vertical_padding * 1.5)
@@ -143,29 +139,22 @@ while date_iter.has_next():
 		line_y = vertical_padding + day_height * y
 		pdf.line(horizontal_padding + day_horizontal_spacing + day_width, line_y, pdf.w - horizontal_padding, line_y)
 
-	# add lines in each day
-	pdf.set_draw_color(100)
-	pdf.set_line_width(.1)
-	for y in range(4):
-		for line in range(1, rows_per_day + 1):
-			if not y == 0:  # skip first day on left side
-				line_y = vertical_padding + day_height * y + row_spacing * line
-				pdf.line(horizontal_padding + indent_padding, line_y, horizontal_padding + day_width, line_y)
-
-			# add line on right side
-			line_y = vertical_padding + day_height * y + row_spacing * line
-			day_x = horizontal_padding + day_width + day_horizontal_spacing
-			pdf.line(day_x + indent_padding, line_y, day_x + day_width, line_y)
-
-	# Add extra rows for first day of the week
-	for extra_line in range(extra_rows_first_day_of_week + 1):
-		line_y = vertical_padding + day_height + row_spacing * extra_line - extra_rows_first_day_of_week * row_spacing
-		pdf.line(horizontal_padding + indent_padding, line_y, horizontal_padding + day_width, line_y)
-
 	# Have to do all of left side before right side
 	for i in range(1, 4):
 		date = date_iter.get_next()
 		links[date] = page_link
+
+		# Add shading behind Saturday and Sunday
+		if highlight_weekend:
+			if date.weekday() in {calendar.SATURDAY, calendar.SUNDAY}:
+				pdf.set_fill_color(240)
+				#pdf.set_xy(horizontal_padding + day_horizontal_spacing + day_width, vertical_padding + day_height * 2)
+				if i == 1:
+					pdf.set_xy(horizontal_padding, vertical_padding + day_height * i - extra_rows_first_day_of_week * row_spacing)
+					pdf.cell(day_width, day_height + extra_rows_first_day_of_week * row_spacing, text="", fill=True)
+				else:
+					pdf.set_xy(horizontal_padding, vertical_padding + day_height * i)
+					pdf.cell(day_width, day_height, text="", fill=True)
 
 		# Add day of week label
 		pdf.set_font(style='', size=15)
@@ -182,10 +171,30 @@ while date_iter.has_next():
 		add_holiday(date, horizontal_padding + indent_padding + 1,
 					vertical_padding + day_height * i + 1 - extra_rows_first_day_of_week * row_spacing * (i == 1))
 
+		# add daily lines
+		pdf.set_draw_color(100)
+		pdf.set_line_width(.1)
+		for line in range(1, rows_per_day + 1):
+			line_y = vertical_padding + day_height * i + row_spacing * line
+			pdf.line(horizontal_padding + indent_padding, line_y, horizontal_padding + day_width, line_y)
+			if i == 1:
+				# Add extra rows for first day of the week
+				for extra_line in range(extra_rows_first_day_of_week + 1):
+					line_y = vertical_padding + day_height + row_spacing * extra_line - extra_rows_first_day_of_week * row_spacing
+					pdf.line(horizontal_padding + indent_padding, line_y, horizontal_padding + day_width, line_y)
+
+
 	# Add date labels on right
 	for i in range(4):
 		date = date_iter.get_next()
 		links[date] = page_link
+
+		# Add shading behind Saturday and Sunday
+		if highlight_weekend:
+			if date.weekday() in {calendar.SATURDAY, calendar.SUNDAY}:
+				pdf.set_fill_color(240)
+				pdf.set_xy(horizontal_padding + day_horizontal_spacing + day_width, vertical_padding + day_height * i)
+				pdf.cell(day_width, day_height, text="", fill=True)
 
 		# Add day of week label
 		pdf.set_font(style='', size=15)
@@ -199,6 +208,14 @@ while date_iter.has_next():
 
 		add_holiday(date, horizontal_padding + day_width + day_horizontal_spacing + indent_padding + 1,
 					vertical_padding + day_height * i + 1)
+
+		# add daily lines
+		pdf.set_draw_color(100)
+		pdf.set_line_width(.1)
+		for line in range(1, rows_per_day + 1):
+			line_y = vertical_padding + day_height * i + row_spacing * line
+			day_x = horizontal_padding + day_width + day_horizontal_spacing
+			pdf.line(day_x + indent_padding, line_y, day_x + day_width, line_y)
 
 	if include_mini_cal:  # insert month overview in bottom right corner
 		# set grey background
