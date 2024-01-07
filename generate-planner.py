@@ -149,28 +149,6 @@ while date_iter.has_next():
         text=first_date_of_week.strftime("Week Beginning %B %d, %Y"),
     )
 
-    # Add lines to separate days
-    pdf.set_line_width(0.3)
-    pdf.set_draw_color(0)
-    for y in range(5):
-        if y == 1:  # first day of the week
-            line_y = (
-                vertical_padding
-                + day_height * y
-                - extra_rows_first_day_of_week * row_spacing
-            )
-            pdf.line(horizontal_padding, line_y, horizontal_padding + day_width, line_y)
-        elif not y == 0:  # skip first day on left side
-            line_y = vertical_padding + day_height * y
-            pdf.line(horizontal_padding, line_y, horizontal_padding + day_width, line_y)
-        line_y = vertical_padding + day_height * y
-        pdf.line(
-            horizontal_padding + day_horizontal_spacing + day_width,
-            line_y,
-            pdf.w - horizontal_padding,
-            line_y,
-        )
-
     # Have to do all of left side before right side
     for i in range(1, 4):
         date = date_iter.get_next()
@@ -180,7 +158,6 @@ while date_iter.has_next():
         if highlight_weekend:
             if date.weekday() in {calendar.SATURDAY, calendar.SUNDAY}:
                 pdf.set_fill_color(240)
-                # pdf.set_xy(horizontal_padding + day_horizontal_spacing + day_width, vertical_padding + day_height * 2)
                 if i == 1:
                     pdf.set_xy(
                         horizontal_padding,
@@ -197,6 +174,19 @@ while date_iter.has_next():
                 else:
                     pdf.set_xy(horizontal_padding, vertical_padding + day_height * i)
                     pdf.cell(day_width, day_height, text="", fill=True)
+
+        # Add lines to separate days
+        pdf.set_line_width(0.3)
+        pdf.set_draw_color(0)
+        if i == 1:  # first day of the week
+            line_y = (
+                vertical_padding
+                + day_height * i
+                - extra_rows_first_day_of_week * row_spacing
+            )
+        elif not i == 0:  # skip first day on left side
+            line_y = vertical_padding + day_height * i
+        pdf.line(horizontal_padding, line_y, horizontal_padding + day_width, line_y)
 
         # Add day of week label
         pdf.set_font(style="", size=15)
@@ -270,6 +260,17 @@ while date_iter.has_next():
                     vertical_padding + day_height * i,
                 )
                 pdf.cell(day_width, day_height, text="", fill=True)
+
+        # Add lines to separate days
+        pdf.set_line_width(0.3)
+        pdf.set_draw_color(0)
+        line_y = vertical_padding + day_height * i
+        pdf.line(
+            horizontal_padding + day_horizontal_spacing + day_width,
+            line_y,
+            horizontal_padding + day_horizontal_spacing + day_width + day_width,
+            line_y,
+        )
 
         # Add day of week label
         pdf.set_font(style="", size=15)
