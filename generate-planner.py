@@ -154,13 +154,15 @@ while date_iter.has_next():
         date = date_iter.get_next()
         links[date] = page_link
 
+        x = horizontal_padding
+
         # Add shading behind Saturday and Sunday
         if highlight_weekend:
             if date.weekday() in {calendar.SATURDAY, calendar.SUNDAY}:
                 pdf.set_fill_color(240)
                 if i == 1:
                     pdf.set_xy(
-                        horizontal_padding,
+                        x,
                         vertical_padding
                         + day_height * i
                         - extra_rows_first_day_of_week * row_spacing,
@@ -172,26 +174,23 @@ while date_iter.has_next():
                         fill=True,
                     )
                 else:
-                    pdf.set_xy(horizontal_padding, vertical_padding + day_height * i)
+                    pdf.set_xy(x, vertical_padding + day_height * i)
                     pdf.cell(day_width, day_height, text="", fill=True)
 
         # Add lines to separate days
         pdf.set_line_width(0.3)
         pdf.set_draw_color(0)
-        if i == 1:  # first day of the week
-            line_y = (
-                vertical_padding
-                + day_height * i
-                - extra_rows_first_day_of_week * row_spacing
-            )
-        elif not i == 0:  # skip first day on left side
-            line_y = vertical_padding + day_height * i
-        pdf.line(horizontal_padding, line_y, horizontal_padding + day_width, line_y)
+        line_y = (
+            vertical_padding
+            + day_height * i
+            - extra_rows_first_day_of_week * row_spacing * (i == 1)
+        )
+        pdf.line(x, line_y, x + day_width, line_y)
 
         # Add day of week label
         pdf.set_font(style="", size=15)
         pdf.set_xy(
-            horizontal_padding,
+            x,
             vertical_padding
             + day_height * i
             + 11
@@ -202,7 +201,7 @@ while date_iter.has_next():
         # Add day of month label
         pdf.set_font(style="B", size=25)
         pdf.set_xy(
-            horizontal_padding,
+            x,
             vertical_padding
             + day_height * i
             + 2
@@ -212,7 +211,7 @@ while date_iter.has_next():
 
         add_holiday(
             date,
-            horizontal_padding + indent_padding + 1,
+            x + indent_padding + 1,
             vertical_padding
             + day_height * i
             + 1
@@ -224,12 +223,7 @@ while date_iter.has_next():
         pdf.set_line_width(0.1)
         for line in range(1, rows_per_day + 1):
             line_y = vertical_padding + day_height * i + row_spacing * line
-            pdf.line(
-                horizontal_padding + indent_padding,
-                line_y,
-                horizontal_padding + day_width,
-                line_y,
-            )
+            pdf.line(x + indent_padding, line_y, x + day_width, line_y)
             if i == 1:
                 # Add extra rows for first day of the week
                 for extra_line in range(extra_rows_first_day_of_week + 1):
@@ -240,9 +234,9 @@ while date_iter.has_next():
                         - extra_rows_first_day_of_week * row_spacing
                     )
                     pdf.line(
-                        horizontal_padding + indent_padding,
+                        x + indent_padding,
                         line_y,
-                        horizontal_padding + day_width,
+                        x + day_width,
                         line_y,
                     )
 
@@ -251,12 +245,14 @@ while date_iter.has_next():
         date = date_iter.get_next()
         links[date] = page_link
 
+        x = horizontal_padding + day_horizontal_spacing + day_width
+
         # Add shading behind Saturday and Sunday
         if highlight_weekend:
             if date.weekday() in {calendar.SATURDAY, calendar.SUNDAY}:
                 pdf.set_fill_color(240)
                 pdf.set_xy(
-                    horizontal_padding + day_horizontal_spacing + day_width,
+                    x,
                     vertical_padding + day_height * i,
                 )
                 pdf.cell(day_width, day_height, text="", fill=True)
@@ -265,17 +261,12 @@ while date_iter.has_next():
         pdf.set_line_width(0.3)
         pdf.set_draw_color(0)
         line_y = vertical_padding + day_height * i
-        pdf.line(
-            horizontal_padding + day_horizontal_spacing + day_width,
-            line_y,
-            horizontal_padding + day_horizontal_spacing + day_width + day_width,
-            line_y,
-        )
+        pdf.line(x, line_y, x + day_width, line_y)
 
         # Add day of week label
         pdf.set_font(style="", size=15)
         pdf.set_xy(
-            horizontal_padding + day_width + day_horizontal_spacing,
+            x,
             vertical_padding + day_height * i + 11,
         )
         pdf.cell(w=indent_padding, align="C", text=date.strftime("%a"))
@@ -283,18 +274,14 @@ while date_iter.has_next():
         # Add day of month label
         pdf.set_font(style="B", size=25)
         pdf.set_xy(
-            horizontal_padding + day_width + day_horizontal_spacing,
+            x,
             vertical_padding + day_height * i + 2,
         )
         pdf.cell(w=indent_padding, align="C", text=str(date.day))
 
         add_holiday(
             date,
-            horizontal_padding
-            + day_width
-            + day_horizontal_spacing
-            + indent_padding
-            + 1,
+            x + indent_padding + 1,
             vertical_padding + day_height * i + 1,
         )
 
@@ -303,8 +290,7 @@ while date_iter.has_next():
         pdf.set_line_width(0.1)
         for line in range(1, rows_per_day + 1):
             line_y = vertical_padding + day_height * i + row_spacing * line
-            day_x = horizontal_padding + day_width + day_horizontal_spacing
-            pdf.line(day_x + indent_padding, line_y, day_x + day_width, line_y)
+            pdf.line(x + indent_padding, line_y, x + day_width, line_y)
 
     if include_mini_cal:  # insert month overview in bottom right corner
         # set grey background
