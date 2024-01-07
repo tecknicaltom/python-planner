@@ -94,7 +94,7 @@ pdf.set_font(family=font)
 
 # Compute more constants
 day_height = (pdf.h - vertical_padding * 2) / 4
-day_width = (pdf.w - horizontal_padding * 2 - day_horizontal_spacing) / 3
+day_width = (pdf.w - horizontal_padding * 2 - day_horizontal_spacing) / 2
 row_spacing = day_height / (rows_per_day + 1)
 links = dict()  # date to page links
 cw = row_spacing * 6.5  # mini calendar width
