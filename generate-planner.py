@@ -94,7 +94,7 @@ pdf.set_font(family=font)
 
 # Compute more constants
 day_height = (pdf.h - vertical_padding * 2) / 4
-day_width = (pdf.w - horizontal_padding * 2 - day_horizontal_spacing) / 2
+day_width = (pdf.w - horizontal_padding * 2 - day_horizontal_spacing) / 3
 row_spacing = day_height / (rows_per_day + 1)
 links = dict()  # date to page links
 cw = row_spacing * 6.5  # mini calendar width
@@ -186,6 +186,9 @@ while date_iter.has_next():
             - extra_rows_first_day_of_week * row_spacing * (i == 1)
         )
         pdf.line(x, line_y, x + day_width, line_y)
+        if i == 3:
+            line_y = vertical_padding + day_height * (i + 1)
+            pdf.line(x, line_y, x + day_width, line_y)
 
         # Add day of week label
         pdf.set_font(style="", size=15)
@@ -262,6 +265,9 @@ while date_iter.has_next():
         pdf.set_draw_color(0)
         line_y = vertical_padding + day_height * i
         pdf.line(x, line_y, x + day_width, line_y)
+        if i == 3:
+            line_y = vertical_padding + day_height * (i + 1)
+            pdf.line(x, line_y, x + day_width, line_y)
 
         # Add day of week label
         pdf.set_font(style="", size=15)
