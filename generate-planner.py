@@ -143,7 +143,7 @@ while date_iter.has_next():
     # add week title
     pdf.set_font(style="B", size=20)
     pdf.set_xy(0, vertical_padding * 1.5)
-    pdf.cell(
+    pdf.multi_cell(
         w=horizontal_padding + day_horizontal_spacing + day_width,
         align="C",
         text=first_date_of_week.strftime("Week Beginning %B %d, %Y"),
